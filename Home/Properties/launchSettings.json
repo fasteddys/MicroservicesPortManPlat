@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Home": {
+      "commandName": "Project",
+      "launchUrl": "home",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:44356;http://localhost:37723"
+    }
+  }
+}

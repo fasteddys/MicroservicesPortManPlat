@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Portfolios": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "portfolios",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:44393;http://localhost:61989"
+    }
+  }
+}
