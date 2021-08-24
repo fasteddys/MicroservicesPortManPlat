@@ -310,6 +310,34 @@ namespace PortfolioValuation.Controllers
             return response;
         }
 
+        [HttpDelete("portfolio/{portfolioId}")]
+        public async Task<Response> DiscardPortfolio(int portfolioId)
+        {
+            Response response = new Response();
+
+            try
+            {
+                var portfolio = _pmpContext.Portfolios.Where(x => x.Id == portfolioId).FirstOrDefault();
+                if (portfolio != null)
+                {
+                    portfolio.OperationType = "DISCARD";
+
+                    _pmpContext.Update(portfolio);
+                    await _pmpContext.SaveChangesAsync();
+                }
+
+                response.ResponseCode = 200;
+                response.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                response.ResponseCode = 500;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         private List<Contract> GetContracts(PortfolioValuationRequest request)
         {
             var query = _pmpContext.Contracts.AsQueryable();
