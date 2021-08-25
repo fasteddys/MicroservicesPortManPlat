@@ -125,18 +125,17 @@ namespace PortfolioValuation.Controllers
 
             try
             {
-                //request.Contracts.ForEach(x => x.Id = 0);
-                //request.Contracts.ForEach(x => x.PortfolioId = null);
-                //request.Contracts.ForEach(x => x.ProcessDate = Convert.ToDateTime(request.ViewModel.DateAdded));
-
-                //request.Contracts.ForEach(x => x.Participants.ToList().ForEach(x => x.Id = 0));
-                //request.Contracts.ForEach(x => x.Participants.ToList().ForEach(x => x.PortfolioId = null));
-                //request.Contracts.ForEach(x => x.Participants.ToList().ForEach(x => x.ContractId = 0));
-                //request.Contracts.ForEach(x => x.Participants.ToList().ForEach(x => x.ProcessDate = Convert.ToDateTime(request.ViewModel.DateAdded)));
-
-                //request.Contracts.ForEach(x => x.Investors.ToList().ForEach(x => x.Id = 0));
-                //request.Contracts.ForEach(x => x.Investors.ToList().ForEach(x => x.PortfolioId = null));
-                //request.Contracts.ForEach(x => x.Investors.ToList().ForEach(x => x.ContractId = 0));
+                var portfolioContext = _pmpContext.Portfolios.Where(x => x.Portfolio1.ToLower() == request.ViewModel.Portfolio.ToLower()).ToList();
+                if (!string.IsNullOrEmpty(request.ViewModel.Subportfolio) && portfolioContext.Count() > 0)
+                {
+                    portfolioContext = portfolioContext.Where(x => x.Subportfolio.ToLower() == request.ViewModel.Subportfolio.ToLower()).ToList();
+                }
+                if (portfolioContext.Count() > 0)
+                {
+                    response.ResponseCode = 400;
+                    response.Message = "Portfolio name already exist.";
+                    return response;
+                }
 
                 List<PortfolioContract> portfolioContracts = new List<PortfolioContract>();
                 List<PortfolioInvestor> portfolioInvestors = new List<PortfolioInvestor>();
@@ -170,33 +169,15 @@ namespace PortfolioValuation.Controllers
                     CreationDate = request.ViewModel.DateAdded,
                     CutOffDate = request.ViewModel.DateCutOff,
                     SigningDate = request.ViewModel.DateSigning,
-                    //Contracts = request.Contracts
                     PortfolioContracts = portfolioContracts,
                     PortfolioInvestors = portfolioInvestors,
                     PortfolioParticipants = portfolioParticipants
                 };
-                //if (!string.IsNullOrEmpty(request.ViewModel.DateClosing))
-                //    portfolio.ClosingDate = Convert.ToDateTime(request.ViewModel.DateClosing);
-                //if (!string.IsNullOrEmpty(request.ViewModel.DateAdded))
-                //    portfolio.CreationDate = Convert.ToDateTime(request.ViewModel.DateAdded);
-                //if (!string.IsNullOrEmpty(request.ViewModel.DateCutOff))
-                //    portfolio.CutOffDate = Convert.ToDateTime(request.ViewModel.DateCutOff);
-                //if (!string.IsNullOrEmpty(request.ViewModel.DateSigning))
-                //    portfolio.SigningDate = Convert.ToDateTime(request.ViewModel.DateSigning);
-
                 _pmpContext.Add(portfolio);
                 await _pmpContext.SaveChangesAsync();
 
-                //var portfolioId = portfolio.Id;
-
-                //portfolio.Contracts.ToList().ForEach(x => x.Participants.ToList().ForEach(x => x.PortfolioId = portfolioId));
-                //portfolio.Contracts.ToList().ForEach(x => x.Investors.ToList().ForEach(x => x.PortfolioId = portfolioId));
-
-                //_pmpContext.Update(portfolio);
-                //await _pmpContext.SaveChangesAsync();
-
                 response.ResponseCode = 200;
-                response.Message = "Success";
+                response.Message = "Successfully added the portfolio.";
             }
             catch (Exception ex)
             {
@@ -266,7 +247,7 @@ namespace PortfolioValuation.Controllers
                 await _pmpContext.SaveChangesAsync();
 
                 response.ResponseCode = 200;
-                response.Message = "Success";
+                response.Message = "Successfully added the contract/s to portfolio.";
             }
             catch (Exception ex)
             {
@@ -294,7 +275,7 @@ namespace PortfolioValuation.Controllers
                 }
 
                 response.ResponseCode = 200;
-                response.Message = "Success";
+                response.Message = "Successfully discarded the portfolio.";
             }
             catch (Exception ex)
             {
