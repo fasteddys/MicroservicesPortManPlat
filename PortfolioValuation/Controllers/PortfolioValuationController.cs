@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MySqlX.XDevAPI.CRUD;
 using PortfolioValuation.Models;
 using PortfolioValuation.Models.DBModels;
 using System;
@@ -215,17 +216,6 @@ namespace PortfolioValuation.Controllers
             {
                 var portfolio = request.ViewModel.PortfolioValuationAdd.Portfolio;
 
-                var portfolioContractsDelete = _pmpContext.PortfolioContracts.Where(x => x.PortfolioId == portfolio.Id).ToList();
-                _pmpContext.RemoveRange(portfolioContractsDelete);
-
-                var portfolioInvestorsDelete = _pmpContext.PortfolioInvestors.Where(x => x.PortfolioId == portfolio.Id).ToList();
-                _pmpContext.RemoveRange(portfolioInvestorsDelete);
-
-                var portfolioParticipantsDelete = _pmpContext.PortfolioParticipants.Where(x => x.PortfolioId == portfolio.Id).ToList();
-                _pmpContext.RemoveRange(portfolioParticipantsDelete);
-
-                await _pmpContext.SaveChangesAsync();
-
                 List<Investor> investors = new List<Investor>();
                 List<Participant> participants = new List<Participant>();
                 foreach (var item in request.Contracts)
@@ -234,22 +224,35 @@ namespace PortfolioValuation.Controllers
                     participants.AddRange(item.Participants);
                 }
 
-                List<PortfolioContract> portfolioContracts = new List<PortfolioContract>();
                 var contractIds = request.Contracts.Select(x => x.Id).ToList();
+                var investorIds = investors.Select(x => x.Id).ToList();
+                var participantIds = participants.Select(x => x.Id).ToList();
+                
+                // Remove existing data
+                var portfolioContractsDelete = _pmpContext.PortfolioContracts.Where(x => x.PortfolioId == portfolio.Id && contractIds.Contains(x.ContractId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioContractsDelete);
+
+                var portfolioInvestorsDelete = _pmpContext.PortfolioInvestors.Where(x => x.PortfolioId == portfolio.Id && investorIds.Contains(x.InvestorId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioInvestorsDelete);
+
+                var portfolioParticipantsDelete = _pmpContext.PortfolioParticipants.Where(x => x.PortfolioId == portfolio.Id && participantIds.Contains(x.ParticipantId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioParticipantsDelete);
+
+                await _pmpContext.SaveChangesAsync();
+
+                // prepare entities
+                List<PortfolioContract> portfolioContracts = new List<PortfolioContract>();
+                List<PortfolioInvestor> portfolioInvestors = new List<PortfolioInvestor>();
+                List<PortfolioParticipant> portfolioParticipants = new List<PortfolioParticipant>();
+
                 foreach (var contractId in contractIds)
                 {
                     portfolioContracts.Add(new PortfolioContract { ContractId = contractId, PortfolioId = portfolio.Id });
                 }
-
-                List<PortfolioInvestor> portfolioInvestors = new List<PortfolioInvestor>();
-                var investorIds = investors.Select(x => x.Id).ToList();
                 foreach (var investorId in investorIds)
                 {
                     portfolioInvestors.Add(new PortfolioInvestor { InvestorId = investorId, PortfolioId = portfolio.Id });
                 }
-
-                List<PortfolioParticipant> portfolioParticipants = new List<PortfolioParticipant>();
-                var participantIds = participants.Select(x => x.Id).ToList();
                 foreach (var participantId in participantIds)
                 {
                     portfolioParticipants.Add(new PortfolioParticipant { ParticipantId = participantId, PortfolioId = portfolio.Id });
@@ -261,42 +264,6 @@ namespace PortfolioValuation.Controllers
 
                 _pmpContext.Update(portfolio);
                 await _pmpContext.SaveChangesAsync();
-
-                //var requestContractIds = request.Contracts.Select(x => x.Id).ToList();
-                //var portfolioContractsToDelete = portfolioContracts.Where(x => !requestContractIds.Contains(x.Id)).ToList();
-                //_pmpContext.RemoveRange(portfolioContractsToDelete);
-                //await _pmpContext.SaveChangesAsync();
-
-                //var portfolioContext = _pmpContext.Portfolios.Where(x => x.Id == portfolioId)
-                //    .Include(x => x.Contracts)
-                //    .Include(x => x.Participants)
-                //    .Include(x => x.Procedures)
-                //    .Include(x => x.Investors)
-                //    .FirstOrDefault();
-                //if (portfolioContext != null)
-                //{
-                //    var existingContractIds = portfolioContext.Contracts.Select(x => x.Id).ToList();
-                //    if (existingContractIds.Count() > 0)
-                //    {
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Participants.ToList().ForEach(x => x.Id = 0));
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Participants.ToList().ForEach(x => x.PortfolioId = portfolioId));
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Participants.ToList().ForEach(x => x.ContractId = 0));
-
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Investors.ToList().ForEach(x => x.Id = 0));
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Investors.ToList().ForEach(x => x.PortfolioId = portfolioId));
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Investors.ToList().ForEach(x => x.ContractId = 0));
-
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.Id = 0);
-                //        request.Contracts.Where(x => !existingContractIds.Contains(x.Id)).ToList().ForEach(x => x.PortfolioId = portfolioId);
-                //    }
-
-                //    portfolioContext.Portfolio1 = request.ViewModel.PortfolioValuationAdd.Portfolio;
-                //    portfolioContext.Subportfolio = request.ViewModel.PortfolioValuationAdd.Subportfolio;
-                //    portfolioContext.Contracts = request.Contracts;
-
-                //    _pmpContext.Update(portfolioContext);
-                //    await _pmpContext.SaveChangesAsync();
-                //}
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
