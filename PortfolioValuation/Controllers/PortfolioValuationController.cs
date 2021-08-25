@@ -17,6 +17,7 @@ namespace PortfolioValuation.Controllers
     public class PortfolioValuationController : ControllerBase
     {
         private pmpContext _pmpContext;
+        private static bool reflectExcludedContractIds = true;
 
         public PortfolioValuationController(pmpContext pmpContext)
         {
@@ -30,6 +31,7 @@ namespace PortfolioValuation.Controllers
 
             try
             {
+                reflectExcludedContractIds = false;
                 var contracts = GetContracts(request);
 
                 response.ResponseCode = 200;
@@ -115,6 +117,7 @@ namespace PortfolioValuation.Controllers
                 response.Message = ex.Message;
             }
 
+            reflectExcludedContractIds = true;
             return response;
         }
 
@@ -353,7 +356,7 @@ namespace PortfolioValuation.Controllers
                     query = query.Where(x => contractTypes.Contains(x.ContractType));
                 }
             }
-            if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0)
+            if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0 && reflectExcludedContractIds)
             {
                 query = query.Where(x => !request.ExcludedContractIds.Contains(x.Id));
             }
