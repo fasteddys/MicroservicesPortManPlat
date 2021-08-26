@@ -350,10 +350,10 @@ namespace PortfolioValuation.Controllers
                 query = query.Where(x => x.Participants.Any(y => y.Region.ToLower() == request.Region.ToLower()));
             if (request.ContractTypes != null && request.ContractTypes.Count() > 0)
             {
-                var contractTypes = request.ContractTypes.Where(x => x.IsSelected).Select(x => x.Name).ToList();
+                var contractTypes = request.ContractTypes.Where(x => x.IsSelected).Select(x => x.Name.ToLower()).ToList();
                 if (contractTypes.Count() > 0)
                 {
-                    query = query.Where(x => contractTypes.Contains(x.ContractType));
+                    query = query.Where(x => contractTypes.Contains(x.ContractType.ToLower()));
                 }
             }
             if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0 && reflectExcludedContractIds)
