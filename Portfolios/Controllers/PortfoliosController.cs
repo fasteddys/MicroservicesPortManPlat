@@ -25,7 +25,7 @@ namespace Portfolios.Controllers
 
         [HttpGet]
         public Response Get(string portfolio, string subportfolio, DateTime? creation_date, DateTime? cut_off_date, DateTime? signing_date, DateTime? closing_date,
-            string holderEntity, string investor, decimal? closingOB, string typology, int? year, int? contracts, string status)
+            string holderEntity, string investor, decimal? closingOB, string typology, int? year, int? contracts, string status, bool isTableFilter = false)
         {
             Response response = new Response();
 
@@ -38,10 +38,20 @@ namespace Portfolios.Controllers
                     .Include(x => x.PortfolioInvestors)
                     .ThenInclude(x => x.Investor)
                     .AsQueryable();
-                if (!string.IsNullOrEmpty(portfolio))
-                    portfolios = portfolios.Where(x => x.Portfolio1 == portfolio);
-                if (!string.IsNullOrEmpty(subportfolio))
-                    portfolios = portfolios.Where(x => x.Subportfolio == subportfolio);
+                if (isTableFilter)
+                {
+                    if (!string.IsNullOrEmpty(portfolio))
+                        portfolios = portfolios.Where(x => x.Portfolio1.ToLower().Contains(portfolio.ToLower()));
+                    if (!string.IsNullOrEmpty(subportfolio))
+                        portfolios = portfolios.Where(x => x.Subportfolio.ToLower().Contains(subportfolio.ToLower()));
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(portfolio))
+                        portfolios = portfolios.Where(x => x.Portfolio1.ToLower() == portfolio.ToLower());
+                    if (!string.IsNullOrEmpty(subportfolio))
+                        portfolios = portfolios.Where(x => x.Subportfolio.ToLower() == subportfolio.ToLower());
+                }
                 if (creation_date != null)
                     portfolios = portfolios.Where(x => x.CreationDate == creation_date);
                 if (cut_off_date != null)
