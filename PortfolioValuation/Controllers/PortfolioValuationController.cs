@@ -289,6 +289,57 @@ namespace PortfolioValuation.Controllers
             return response;
         }
 
+        [HttpPut("portfolio/{portfolioId}/contracts")]
+        public async Task<Response> DeletePortfolioContracts(int portfolioId, List<Contract> contracts)
+        {
+            Response response = new Response();
+
+            try
+            {
+                var portfolio = _pmpContext.Portfolios.Where(x => x.Id == portfolioId).FirstOrDefault();
+                if (portfolio == null)
+                {
+                    response.ResponseCode = 400;
+                    response.Message = "Portfolio not found.";
+                    return response;
+                }
+
+                List<Investor> investors = new List<Investor>();
+                List<Participant> participants = new List<Participant>();
+                foreach (var item in contracts)
+                {
+                    investors.AddRange(item.Investors);
+                    participants.AddRange(item.Participants);
+                }
+
+                var contractIds = contracts.Select(x => x.Id).ToList();
+                var investorIds = investors.Select(x => x.Id).ToList();
+                var participantIds = participants.Select(x => x.Id).ToList();
+
+                // Remove data
+                var portfolioContractsDelete = _pmpContext.PortfolioContracts.Where(x => x.PortfolioId == portfolio.Id && contractIds.Contains(x.ContractId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioContractsDelete);
+
+                var portfolioInvestorsDelete = _pmpContext.PortfolioInvestors.Where(x => x.PortfolioId == portfolio.Id && investorIds.Contains(x.InvestorId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioInvestorsDelete);
+
+                var portfolioParticipantsDelete = _pmpContext.PortfolioParticipants.Where(x => x.PortfolioId == portfolio.Id && participantIds.Contains(x.ParticipantId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioParticipantsDelete);
+
+                await _pmpContext.SaveChangesAsync();
+
+                response.ResponseCode = 200;
+                response.Message = "Successfully updated the portfolio.";
+            }
+            catch (Exception ex)
+            {
+                response.ResponseCode = 500;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         private List<Contract> GetContracts(PortfolioValuationRequest request)
         {
             var query = _pmpContext.Contracts.AsQueryable();
