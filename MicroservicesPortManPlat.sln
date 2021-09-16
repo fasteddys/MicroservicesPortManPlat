@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Portfolios", "Portfolios\Po
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortfolioValuation", "PortfolioValuation\PortfolioValuation.csproj", "{A27D802C-A4CA-40E5-BFEA-C47FF4A1B40D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Procedures", "Procedures\Procedures.csproj", "{85C7F266-6C97-456F-98BB-C18BD6ACF1B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Procedures", "Procedures\Procedures.csproj", "{85C7F266-6C97-456F-98BB-C18BD6ACF1B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
