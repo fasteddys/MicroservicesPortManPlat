@@ -10,7 +10,9 @@ namespace Participants.Models.DBModels
         public Contract()
         {
             Collaterals = new HashSet<Collateral>();
+            Investors = new HashSet<Investor>();
             Participants = new HashSet<Participant>();
+            PortfolioContracts = new HashSet<PortfolioContract>();
             Prices = new HashSet<Price>();
             Procedures = new HashSet<Procedure>();
         }
@@ -36,7 +38,7 @@ namespace Participants.Models.DBModels
         public decimal? DefaultInterests { get; set; }
         public DateTime? OriginationDate { get; set; }
         public DateTime? MaturityDate { get; set; }
-        public sbyte? EarlyMaturity { get; set; }
+        public byte? EarlyMaturity { get; set; }
         public DateTime? EarlyMaturityDate { get; set; }
         public DateTime? FirstUnpaidInstalmentDate { get; set; }
         public DateTime? DefaultDate { get; set; }
@@ -44,22 +46,24 @@ namespace Participants.Models.DBModels
         public int? OutstandingInstalments { get; set; }
         public string AccountingSituation { get; set; }
         public int? LtvOriginal { get; set; }
-        public sbyte? Syndicated { get; set; }
+        public byte? Syndicated { get; set; }
         public decimal? SyndicationPercent { get; set; }
-        public sbyte? Securitized { get; set; }
+        public byte? Securitized { get; set; }
         public string SecurityNumber { get; set; }
-        public sbyte? Novation { get; set; }
+        public byte? Novation { get; set; }
         public DateTime? NovationDate { get; set; }
-        public sbyte? JudicialProcess { get; set; }
+        public byte? JudicialProcess { get; set; }
         public string ProceedingType { get; set; }
-        public sbyte? LegalProcess { get; set; }
+        public byte? LegalProcess { get; set; }
         public string Insolvency { get; set; }
-        public sbyte? Reo { get; set; }
+        public byte? Reo { get; set; }
         public decimal? ReoAmount { get; set; }
 
         public virtual Portfolio PortfolioNavigation { get; set; }
         public virtual ICollection<Collateral> Collaterals { get; set; }
+        public virtual ICollection<Investor> Investors { get; set; }
         public virtual ICollection<Participant> Participants { get; set; }
+        public virtual ICollection<PortfolioContract> PortfolioContracts { get; set; }
         public virtual ICollection<Price> Prices { get; set; }
         public virtual ICollection<Procedure> Procedures { get; set; }
     }

@@ -7,6 +7,11 @@ namespace Investors.Models.DBModels
 {
     public partial class Procedure
     {
+        public Procedure()
+        {
+            PortfolioProcedures = new HashSet<PortfolioProcedure>();
+        }
+
         public int Id { get; set; }
         public int? PortfolioId { get; set; }
         public string Portfolio { get; set; }
@@ -38,5 +43,6 @@ namespace Investors.Models.DBModels
 
         public virtual Contract ContractNavigation { get; set; }
         public virtual Portfolio PortfolioNavigation { get; set; }
+        public virtual ICollection<PortfolioProcedure> PortfolioProcedures { get; set; }
     }
 }

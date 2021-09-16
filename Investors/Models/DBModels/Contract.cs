@@ -12,6 +12,7 @@ namespace Investors.Models.DBModels
             Collaterals = new HashSet<Collateral>();
             Investors = new HashSet<Investor>();
             Participants = new HashSet<Participant>();
+            PortfolioContracts = new HashSet<PortfolioContract>();
             Prices = new HashSet<Price>();
             Procedures = new HashSet<Procedure>();
         }
@@ -62,6 +63,7 @@ namespace Investors.Models.DBModels
         public virtual ICollection<Collateral> Collaterals { get; set; }
         public virtual ICollection<Investor> Investors { get; set; }
         public virtual ICollection<Participant> Participants { get; set; }
+        public virtual ICollection<PortfolioContract> PortfolioContracts { get; set; }
         public virtual ICollection<Price> Prices { get; set; }
         public virtual ICollection<Procedure> Procedures { get; set; }
     }

@@ -24,14 +24,19 @@ namespace Investors.Models.DBModels
         public virtual DbSet<Investor> Investors { get; set; }
         public virtual DbSet<Participant> Participants { get; set; }
         public virtual DbSet<Portfolio> Portfolios { get; set; }
+        public virtual DbSet<PortfolioContract> PortfolioContracts { get; set; }
+        public virtual DbSet<PortfolioInvestor> PortfolioInvestors { get; set; }
+        public virtual DbSet<PortfolioParticipant> PortfolioParticipants { get; set; }
+        public virtual DbSet<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual DbSet<Price> Prices { get; set; }
         public virtual DbSet<Procedure> Procedures { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("name=pmpDb", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.25-mysql"));
+                optionsBuilder.UseMySql("name=pmpDb", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql"));
             }
         }
 
@@ -310,7 +315,7 @@ namespace Investors.Models.DBModels
                 entity.Property(e => e.UnpaidInstalments).HasColumnName("unpaid_instalments");
 
                 entity.HasOne(d => d.PortfolioNavigation)
-                    .WithMany(p => p.Contracts)
+                    .WithMany(p => p.ContractsNavigation)
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("contracts_portfolio_id_foreign");
@@ -725,6 +730,8 @@ namespace Investors.Models.DBModels
                     .HasPrecision(15, 2)
                     .HasColumnName("closing_ob");
 
+                entity.Property(e => e.Contracts).HasColumnName("contracts");
+
                 entity.Property(e => e.CreationDate)
                     .HasColumnType("datetime")
                     .HasColumnName("creation_date");
@@ -737,8 +744,12 @@ namespace Investors.Models.DBModels
                     .HasPrecision(15, 2)
                     .HasColumnName("cut_off_ob");
 
-                entity.Property(e => e.Investor)
+                entity.Property(e => e.HolderEntity)
                     .HasMaxLength(45)
+                    .HasColumnName("holder_entity");
+
+                entity.Property(e => e.Investor)
+                    .HasMaxLength(100)
                     .HasColumnName("investor");
 
                 entity.Property(e => e.OperationType)
@@ -757,9 +768,125 @@ namespace Investors.Models.DBModels
                     .HasPrecision(15, 2)
                     .HasColumnName("signing_ob");
 
+                entity.Property(e => e.Status)
+                    .HasMaxLength(45)
+                    .HasColumnName("status");
+
                 entity.Property(e => e.Subportfolio)
                     .HasMaxLength(45)
                     .HasColumnName("subportfolio");
+
+                entity.Property(e => e.Tipology)
+                    .HasMaxLength(100)
+                    .HasColumnName("tipology");
+
+                entity.Property(e => e.Year).HasColumnName("year");
+            });
+
+            modelBuilder.Entity<PortfolioContract>(entity =>
+            {
+                entity.ToTable("portfolio_contract");
+
+                entity.HasIndex(e => e.ContractId, "portfolio_contract_contract_id_idx");
+
+                entity.HasIndex(e => e.PortfolioId, "portfolio_contract_portfolio_id_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ContractId).HasColumnName("contract_id");
+
+                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
+
+                entity.HasOne(d => d.Contract)
+                    .WithMany(p => p.PortfolioContracts)
+                    .HasForeignKey(d => d.ContractId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_contract_contract_id");
+
+                entity.HasOne(d => d.Portfolio)
+                    .WithMany(p => p.PortfolioContracts)
+                    .HasForeignKey(d => d.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_contract_portfolio_id");
+            });
+
+            modelBuilder.Entity<PortfolioInvestor>(entity =>
+            {
+                entity.ToTable("portfolio_investor");
+
+                entity.HasIndex(e => e.InvestorId, "portfolio_investor_investor_id_foreign_idx");
+
+                entity.HasIndex(e => e.PortfolioId, "portfolio_investor_portfolio_id_foreign_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.InvestorId).HasColumnName("investor_id");
+
+                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
+
+                entity.HasOne(d => d.Investor)
+                    .WithMany(p => p.PortfolioInvestors)
+                    .HasForeignKey(d => d.InvestorId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_investor_investor_id_foreign");
+
+                entity.HasOne(d => d.Portfolio)
+                    .WithMany(p => p.PortfolioInvestors)
+                    .HasForeignKey(d => d.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_investor_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<PortfolioParticipant>(entity =>
+            {
+                entity.ToTable("portfolio_participant");
+
+                entity.HasIndex(e => e.ParticipantId, "portfolio_participant_participant_id_foreign_idx");
+
+                entity.HasIndex(e => e.PortfolioId, "portfolio_participant_portfolio_id_foreign_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ParticipantId).HasColumnName("participant_id");
+
+                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
+
+                entity.HasOne(d => d.Participant)
+                    .WithMany(p => p.PortfolioParticipants)
+                    .HasForeignKey(d => d.ParticipantId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_participant_participant_id_foreign");
+
+                entity.HasOne(d => d.Portfolio)
+                    .WithMany(p => p.PortfolioParticipants)
+                    .HasForeignKey(d => d.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_participant_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<PortfolioProcedure>(entity =>
+            {
+                entity.ToTable("portfolio_procedure");
+
+                entity.HasIndex(e => e.PortfolioId, "portfolio_procedure_portfolio_id_foreign_idx");
+
+                entity.HasIndex(e => e.ProcedureId, "portfolio_procedure_procedure_id_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
+
+                entity.Property(e => e.ProcedureId).HasColumnName("procedure_id");
+
+                entity.HasOne(d => d.Portfolio)
+                    .WithMany(p => p.PortfolioProcedures)
+                    .HasForeignKey(d => d.PortfolioId)
+                    .HasConstraintName("portfolio_procedure_portfolio_id_foreign");
+
+                entity.HasOne(d => d.Procedure)
+                    .WithMany(p => p.PortfolioProcedures)
+                    .HasForeignKey(d => d.ProcedureId)
+                    .HasConstraintName("portfolio_procedure_procedure_id_foreign");
             });
 
             modelBuilder.Entity<Price>(entity =>
@@ -826,7 +953,7 @@ namespace Investors.Models.DBModels
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
 
                 entity.Property(e => e.Court)
-                    .HasMaxLength(45)
+                    .HasMaxLength(100)
                     .HasColumnName("court");
 
                 entity.Property(e => e.CourtCity)
@@ -922,7 +1049,6 @@ namespace Investors.Models.DBModels
                 entity.HasOne(d => d.ContractNavigation)
                     .WithMany(p => p.Procedures)
                     .HasForeignKey(d => d.ContractId)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("procedures_contract_id_foreign");
 
                 entity.HasOne(d => d.PortfolioNavigation)
@@ -930,6 +1056,21 @@ namespace Investors.Models.DBModels
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("procedures_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(45)
+                    .HasColumnName("password");
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(45)
+                    .HasColumnName("username");
             });
 
             OnModelCreatingPartial(modelBuilder);

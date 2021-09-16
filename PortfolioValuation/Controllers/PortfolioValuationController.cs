@@ -86,36 +86,63 @@ namespace PortfolioValuation.Controllers
                     procedures.AddRange(contract.Procedures);
                 }
 
-                contracts.ForEach(x => x.Investors.ToList().ForEach(x => x.Contract = null));
+                foreach (var contract in contracts)
+                {
+                    foreach (var investor in contract.Investors.ToList())
+                    {
+                        investor.Contract = new Contract();
+                    }
+                }
 
-                participants.ForEach(x => x.ContractNavigation.Collaterals = null);
-                participants.ForEach(x => x.ContractNavigation.Investors = null);
-                participants.ForEach(x => x.ContractNavigation.Participants = null);
-                //participants.ForEach(x => x.ContractNavigation.PortfolioContracts = null);
-                participants.ForEach(x => x.ContractNavigation.PortfolioNavigation = null);
-                participants.ForEach(x => x.ContractNavigation.Prices = null);
-                participants.ForEach(x => x.ContractNavigation.Procedures = null);
+                foreach (var participant in participants)
+                {
+                    if (participant.ContractNavigation != null)
+                    {
+                        participant.ContractNavigation.Collaterals = new List<Collateral>();
+                        participant.ContractNavigation.Investors = new List<Investor>();
+                        participant.ContractNavigation.Participants = new List<Participant>();
+                        //participant.ContractNavigation.PortfolioContracts = null;
+                        participant.ContractNavigation.PortfolioNavigation = new Portfolio();
+                        participant.ContractNavigation.Prices = new List<Price>();
+                        participant.ContractNavigation.Procedures = new List<Procedure>();
+                    }
+                }
 
-                procedures.ForEach(x => x.ContractNavigation.Collaterals = null);
-                procedures.ForEach(x => x.ContractNavigation.Investors = null);
-                procedures.ForEach(x => x.ContractNavigation.Participants = null);
-                //procedures.ForEach(x => x.ContractNavigation.PortfolioContracts = null);
-                procedures.ForEach(x => x.ContractNavigation.PortfolioNavigation = null);
-                procedures.ForEach(x => x.ContractNavigation.Prices = null);
-                procedures.ForEach(x => x.ContractNavigation.Procedures = null);
+                foreach (var procedure in procedures)
+                {
+                    if (procedure.ContractNavigation != null)
+                    {
+                        procedure.ContractNavigation.Collaterals = new List<Collateral>();
+                        procedure.ContractNavigation.Investors = new List<Investor>();
+                        procedure.ContractNavigation.Participants = new List<Participant>();
+                        //procedure.ContractNavigation.PortfolioContracts = null;
+                        procedure.ContractNavigation.PortfolioNavigation = new Portfolio();
+                        procedure.ContractNavigation.Prices = new List<Price>();
+                        procedure.ContractNavigation.Procedures = new List<Procedure>();
+                    }
+                }
 
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Collaterals = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Contracts = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Homes = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Insolvencies = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Investors = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Participants = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.PortfolioContracts = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.PortfolioInvestors = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.PortfolioParticipants = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Prices = null));
-                contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Procedures = null));
+                foreach (var contract in contracts)
+                {
+                    foreach (var portfolioContract in contract.PortfolioContracts.ToList())
+                    {
+                        portfolioContract.Contract = new Contract();
+                        if (portfolioContract.Portfolio != null)
+                        {
+                            portfolioContract.Portfolio.Collaterals = new List<Collateral>();
+                            portfolioContract.Portfolio.ContractsNavigation = new List<Contract>();
+                            portfolioContract.Portfolio.Homes = new List<Home>();
+                            portfolioContract.Portfolio.Insolvencies = new List<Insolvency>();
+                            portfolioContract.Portfolio.Investors = new List<Investor>();
+                            portfolioContract.Portfolio.Participants = new List<Participant>();
+                            portfolioContract.Portfolio.PortfolioContracts = new List<PortfolioContract>();
+                            portfolioContract.Portfolio.PortfolioInvestors = new List<PortfolioInvestor>();
+                            portfolioContract.Portfolio.PortfolioParticipants = new List<PortfolioParticipant>();
+                            portfolioContract.Portfolio.Prices = new List<Price>();
+                            portfolioContract.Portfolio.Procedures = new List<Procedure>();
+                        }
+                    }
+                }
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
@@ -257,6 +284,8 @@ namespace PortfolioValuation.Controllers
                 portfolio.PortfolioContracts = portfolioContracts;
                 portfolio.PortfolioInvestors = portfolioInvestors;
                 portfolio.PortfolioParticipants = portfolioParticipants;
+
+                portfolio.ContractsNavigation = new List<Contract>();
 
                 _pmpContext.Update(portfolio);
                 await _pmpContext.SaveChangesAsync();

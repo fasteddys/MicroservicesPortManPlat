@@ -7,6 +7,11 @@ namespace Investors.Models.DBModels
 {
     public partial class Investor
     {
+        public Investor()
+        {
+            PortfolioInvestors = new HashSet<PortfolioInvestor>();
+        }
+
         public int Id { get; set; }
         public int? PortfolioId { get; set; }
         public int? ContractId { get; set; }
@@ -21,5 +26,6 @@ namespace Investors.Models.DBModels
 
         public virtual Contract Contract { get; set; }
         public virtual Portfolio Portfolio { get; set; }
+        public virtual ICollection<PortfolioInvestor> PortfolioInvestors { get; set; }
     }
 }

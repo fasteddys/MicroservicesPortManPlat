@@ -18,6 +18,7 @@ namespace Portfolios.Models.DBModels
             PortfolioContracts = new HashSet<PortfolioContract>();
             PortfolioInvestors = new HashSet<PortfolioInvestor>();
             PortfolioParticipants = new HashSet<PortfolioParticipant>();
+            PortfolioProcedures = new HashSet<PortfolioProcedure>();
             Prices = new HashSet<Price>();
             Procedures = new HashSet<Procedure>();
         }
@@ -49,6 +50,7 @@ namespace Portfolios.Models.DBModels
         public virtual ICollection<PortfolioContract> PortfolioContracts { get; set; }
         public virtual ICollection<PortfolioInvestor> PortfolioInvestors { get; set; }
         public virtual ICollection<PortfolioParticipant> PortfolioParticipants { get; set; }
+        public virtual ICollection<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual ICollection<Price> Prices { get; set; }
         public virtual ICollection<Procedure> Procedures { get; set; }
     }

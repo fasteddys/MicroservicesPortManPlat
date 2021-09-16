@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace Procedures.Models.DBModels
+namespace Participants.Models.DBModels
 {
     public partial class Investor
     {

@@ -10,6 +10,7 @@ namespace Home.Models.DBModels
         public Participant()
         {
             Insolvencies = new HashSet<Insolvency>();
+            PortfolioParticipants = new HashSet<PortfolioParticipant>();
         }
 
         public int Id { get; set; }
@@ -43,5 +44,6 @@ namespace Home.Models.DBModels
         public virtual Contract ContractNavigation { get; set; }
         public virtual Portfolio PortfolioNavigation { get; set; }
         public virtual ICollection<Insolvency> Insolvencies { get; set; }
+        public virtual ICollection<PortfolioParticipant> PortfolioParticipants { get; set; }
     }
 }

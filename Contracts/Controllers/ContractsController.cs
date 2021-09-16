@@ -1,6 +1,7 @@
 ﻿using Contracts.Models;
 using Contracts.Models.DBModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Crypto.Agreement;
 using System;
@@ -59,45 +60,75 @@ namespace Contracts.Controllers
                     .ThenInclude(x => x.Investor)
                     .ToList();
 
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.Investors = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.Participants = null));
-
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.PortfolioParticipants = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Collaterals = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Investors = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Participants = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Prices = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Procedures = null));
-
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.PortfolioInvestors = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.Contract = null));
-
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.PortfolioProcedures = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Collaterals = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Investors = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Participants = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Prices = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Procedures = null));
-
                 List<Contract> contracts = new List<Contract>();
                 List<Investor> investors = new List<Investor>();
                 List<Participant> participants = new List<Participant>();
                 List<Procedure> procedures = new List<Procedure>();
                 foreach (var portfolio in portfolios)
                 {
+                    foreach (var portfolioContract in portfolio.PortfolioContracts.ToList())
+                    {
+                        portfolioContract.Portfolio = null;
+                        if (portfolioContract.Contract != null)
+                        {
+                            portfolioContract.Contract.PortfolioNavigation = new Portfolio();
+                            portfolioContract.Contract.PortfolioContracts = new List<PortfolioContract>();
+                            portfolioContract.Contract.Investors = new List<Investor>();
+                            portfolioContract.Contract.Participants = new List<Participant>();
+                        }
+                    }
+
+                    foreach (var portfolioParticipant in portfolio.PortfolioParticipants.ToList())
+                    {
+                        portfolioParticipant.Portfolio = null;
+                        if (portfolioParticipant.Participant != null)
+                        {
+                            portfolioParticipant.Participant.PortfolioNavigation = new Portfolio();
+                            portfolioParticipant.Participant.PortfolioParticipants = new List<PortfolioParticipant>();
+                            if (portfolioParticipant.Participant.ContractNavigation != null)
+                            {
+                                portfolioParticipant.Participant.ContractNavigation.Collaterals = new List<Collateral>();
+                                portfolioParticipant.Participant.ContractNavigation.Investors = new List<Investor>();
+                                portfolioParticipant.Participant.ContractNavigation.Participants = new List<Participant>();
+                                portfolioParticipant.Participant.ContractNavigation.PortfolioContracts = new List<PortfolioContract>();
+                                portfolioParticipant.Participant.ContractNavigation.PortfolioNavigation = new Portfolio();
+                                portfolioParticipant.Participant.ContractNavigation.Prices = new List<Price>();
+                                portfolioParticipant.Participant.ContractNavigation.Procedures = new List<Procedure>();
+                            }
+                        }
+                    }
+
+                    foreach (var portfolioInvestor in portfolio.PortfolioInvestors.ToList())
+                    {
+                        portfolioInvestor.Portfolio = new Portfolio();
+                        if (portfolioInvestor.Investor != null)
+                        {
+                            portfolioInvestor.Investor.Portfolio = new Portfolio();
+                            portfolioInvestor.Investor.PortfolioInvestors = new List<PortfolioInvestor>();
+                            portfolioInvestor.Investor.Contract = new Contract();
+                        }
+                    }
+
+                    foreach (var portfolioProcedure in portfolio.PortfolioProcedures.ToList())
+                    {
+                        portfolioProcedure.Portfolio = new Portfolio();
+                        if (portfolioProcedure.Procedure != null)
+                        {
+                            portfolioProcedure.Procedure.PortfolioNavigation = new Portfolio();
+                            portfolioProcedure.Procedure.PortfolioProcedures = new List<PortfolioProcedure>();
+                            if (portfolioProcedure.Procedure.ContractNavigation != null)
+                            {
+                                portfolioProcedure.Procedure.ContractNavigation.Collaterals = new List<Collateral>();
+                                portfolioProcedure.Procedure.ContractNavigation.Investors = new List<Investor>();
+                                portfolioProcedure.Procedure.ContractNavigation.Participants = new List<Participant>();
+                                portfolioProcedure.Procedure.ContractNavigation.PortfolioContracts = new List<PortfolioContract>();
+                                portfolioProcedure.Procedure.ContractNavigation.PortfolioNavigation = new Portfolio();
+                                portfolioProcedure.Procedure.ContractNavigation.Prices = new List<Price>();
+                                portfolioProcedure.Procedure.ContractNavigation.Procedures = new List<Procedure>();
+                            }
+                        }
+                    }
+
                     contracts = portfolio.PortfolioContracts.Select(x => x.Contract).ToList();
                     participants = portfolio.PortfolioParticipants.Select(x => x.Participant).ToList();
                     investors = portfolio.PortfolioInvestors.Select(x => x.Investor).ToList();
@@ -172,45 +203,75 @@ namespace Contracts.Controllers
                     .ThenInclude(x => x.Procedure)
                     .ToList();
 
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.Investors = null));
-                portfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract.Participants = null));
-
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.PortfolioParticipants = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Collaterals = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Investors = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Participants = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Prices = null));
-                portfolios.ForEach(x => x.PortfolioParticipants.ToList().ForEach(x => x.Participant.ContractNavigation.Procedures = null));
-
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.PortfolioInvestors = null));
-                portfolios.ForEach(x => x.PortfolioInvestors.ToList().ForEach(x => x.Investor.Contract = null));
-
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Portfolio = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.PortfolioProcedures = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Collaterals = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Investors = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Participants = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.PortfolioContracts = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.PortfolioNavigation = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Prices = null));
-                portfolios.ForEach(x => x.PortfolioProcedures.ToList().ForEach(x => x.Procedure.ContractNavigation.Procedures = null));
-
                 List<Contract> contracts = new List<Contract>();
                 List<Investor> investors = new List<Investor>();
                 List<Participant> participants = new List<Participant>();
                 List<Procedure> procedures = new List<Procedure>();
                 foreach (var portfolio in portfolios)
                 {
+                    foreach (var portfolioContract in portfolio.PortfolioContracts.ToList())
+                    {
+                        portfolioContract.Portfolio = null;
+                        if (portfolioContract.Contract != null)
+                        {
+                            portfolioContract.Contract.PortfolioNavigation = null;
+                            portfolioContract.Contract.PortfolioContracts = null;
+                            portfolioContract.Contract.Investors = null;
+                            portfolioContract.Contract.Participants = null;
+                        }
+                    }
+
+                    foreach (var portfolioParticipant in portfolio.PortfolioParticipants.ToList())
+                    {
+                        portfolioParticipant.Portfolio = null;
+                        if (portfolioParticipant.Participant != null)
+                        {
+                            portfolioParticipant.Participant.PortfolioNavigation = null;
+                            portfolioParticipant.Participant.PortfolioParticipants = null;
+                            if (portfolioParticipant.Participant.ContractNavigation != null)
+                            {
+                                portfolioParticipant.Participant.ContractNavigation.Collaterals = null;
+                                portfolioParticipant.Participant.ContractNavigation.Investors = null;
+                                portfolioParticipant.Participant.ContractNavigation.Participants = null;
+                                portfolioParticipant.Participant.ContractNavigation.PortfolioContracts = null;
+                                portfolioParticipant.Participant.ContractNavigation.PortfolioNavigation = null;
+                                portfolioParticipant.Participant.ContractNavigation.Prices = null;
+                                portfolioParticipant.Participant.ContractNavigation.Procedures = null;
+                            }
+                        }
+                    }
+
+                    foreach (var portfolioInvestor in portfolio.PortfolioInvestors.ToList())
+                    {
+                        portfolioInvestor.Portfolio = null;
+                        if (portfolioInvestor.Investor != null)
+                        {
+                            portfolioInvestor.Investor.Portfolio = null;
+                            portfolioInvestor.Investor.PortfolioInvestors = null;
+                            portfolioInvestor.Investor.Contract = null;
+                        }
+                    }
+
+                    foreach (var portfolioProcedure in portfolio.PortfolioProcedures.ToList())
+                    {
+                        portfolioProcedure.Portfolio = null;
+                        if (portfolioProcedure.Procedure != null)
+                        {
+                            portfolioProcedure.Procedure.PortfolioNavigation = null;
+                            portfolioProcedure.Procedure.PortfolioProcedures = null;
+                            if (portfolioProcedure.Procedure.ContractNavigation != null)
+                            {
+                                portfolioProcedure.Procedure.ContractNavigation.Collaterals = null;
+                                portfolioProcedure.Procedure.ContractNavigation.Investors = null;
+                                portfolioProcedure.Procedure.ContractNavigation.Participants = null;
+                                portfolioProcedure.Procedure.ContractNavigation.PortfolioContracts = null;
+                                portfolioProcedure.Procedure.ContractNavigation.PortfolioNavigation = null;
+                                portfolioProcedure.Procedure.ContractNavigation.Prices = null;
+                                portfolioProcedure.Procedure.ContractNavigation.Procedures = null;
+                            }
+                        }
+                    }
+
                     contracts = portfolio.PortfolioContracts.Select(x => x.Contract).ToList();
                     participants = portfolio.PortfolioParticipants.Select(x => x.Participant).ToList();
                     investors = portfolio.PortfolioInvestors.Select(x => x.Investor).ToList();
