@@ -17,7 +17,6 @@ namespace PortfolioValuation.Controllers
     public class PortfolioValuationController : ControllerBase
     {
         private pmpContext _pmpContext;
-        private static bool reflectExcludedContractIds = true;
 
         public PortfolioValuationController(pmpContext pmpContext)
         {
@@ -31,7 +30,6 @@ namespace PortfolioValuation.Controllers
 
             try
             {
-                reflectExcludedContractIds = false;
                 var contracts = GetContracts(request);
 
                 response.ResponseCode = 200;
@@ -78,9 +76,34 @@ namespace PortfolioValuation.Controllers
                     }
                 }
 
-                contracts.ForEach(x => x.Participants.ToList().ForEach(x => x.ContractNavigation = null));
+                List<Participant> participants = new List<Participant>();
+                List<Investor> investors = new List<Investor>();
+                List<Procedure> procedures = new List<Procedure>();
+                foreach (var contract in contracts)
+                {
+                    participants.AddRange(contract.Participants);
+                    investors.AddRange(contract.Investors);
+                    procedures.AddRange(contract.Procedures);
+                }
+
                 contracts.ForEach(x => x.Investors.ToList().ForEach(x => x.Contract = null));
-                contracts.ForEach(x => x.Procedures.ToList().ForEach(x => x.ContractNavigation = null));
+
+                participants.ForEach(x => x.ContractNavigation.Collaterals = null);
+                participants.ForEach(x => x.ContractNavigation.Investors = null);
+                participants.ForEach(x => x.ContractNavigation.Participants = null);
+                //participants.ForEach(x => x.ContractNavigation.PortfolioContracts = null);
+                participants.ForEach(x => x.ContractNavigation.PortfolioNavigation = null);
+                participants.ForEach(x => x.ContractNavigation.Prices = null);
+                participants.ForEach(x => x.ContractNavigation.Procedures = null);
+
+                procedures.ForEach(x => x.ContractNavigation.Collaterals = null);
+                procedures.ForEach(x => x.ContractNavigation.Investors = null);
+                procedures.ForEach(x => x.ContractNavigation.Participants = null);
+                //procedures.ForEach(x => x.ContractNavigation.PortfolioContracts = null);
+                procedures.ForEach(x => x.ContractNavigation.PortfolioNavigation = null);
+                procedures.ForEach(x => x.ContractNavigation.Prices = null);
+                procedures.ForEach(x => x.ContractNavigation.Procedures = null);
+
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Contract = null));
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Collaterals = null));
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Contracts = null));
@@ -93,16 +116,6 @@ namespace PortfolioValuation.Controllers
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.PortfolioParticipants = null));
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Prices = null));
                 contracts.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio.Procedures = null));
-
-                List<Participant> participants = new List<Participant>();
-                List<Investor> investors = new List<Investor>();
-                List<Procedure> procedures = new List<Procedure>();
-                foreach (var contract in contracts)
-                {
-                    participants.AddRange(contract.Participants);
-                    investors.AddRange(contract.Investors);
-                    procedures.AddRange(contract.Procedures);
-                }
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
@@ -117,7 +130,6 @@ namespace PortfolioValuation.Controllers
                 response.Message = ex.Message;
             }
 
-            reflectExcludedContractIds = true;
             return response;
         }
 
@@ -407,7 +419,7 @@ namespace PortfolioValuation.Controllers
                     query = query.Where(x => contractTypes.Contains(x.ContractType.ToLower()));
                 }
             }
-            if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0 && reflectExcludedContractIds)
+            if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0 && request.ReflectExcludedContractIds)
             {
                 query = query.Where(x => !request.ExcludedContractIds.Contains(x.Id));
             }
@@ -421,6 +433,10 @@ namespace PortfolioValuation.Controllers
                 {
                     query = query.Where(x => !x.PortfolioContracts.Any(x => x.Portfolio.OperationType == "SALE"));
                 }
+            }
+            if (request.ExcludePossitiveOB)
+            {
+                query = query.Where(x => x.TotalAmountOb < 0);
             }
 
             return query.Include(x => x.Participants)

@@ -20,6 +20,8 @@ namespace PortfolioValuation.Models
         public List<ContractType> ContractTypes { get; set; }
         public List<int> ExcludedContractIds { get; set; }
         public string AddedInPortfolio { get; set; }
+        public bool ReflectExcludedContractIds { get; set; }
+        public bool ExcludePossitiveOB { get; set; }
     }
 
     public class ContractType
