@@ -401,34 +401,34 @@ namespace PortfolioValuation.Controllers
                 switch (request.DebtOB)
                 {
                     case "1000":
-                        query = query.Where(x => x.TotalAmountOb <= 1000);
+                        query = query.Where(x => x.TotalAmountOb > -1000);
                         break;
                     case "4999":
-                        query = query.Where(x => x.TotalAmountOb > 1000 && x.TotalAmountOb <= 5000);
+                        query = query.Where(x => x.TotalAmountOb <= -1000 && x.TotalAmountOb > -5000);
                         break;
                     case "9999":
-                        query = query.Where(x => x.TotalAmountOb > 5000 && x.TotalAmountOb <= 10000);
+                        query = query.Where(x => x.TotalAmountOb <= -5000 && x.TotalAmountOb > -10000);
                         break;
                     case "49999":
-                        query = query.Where(x => x.TotalAmountOb > 10000 && x.TotalAmountOb <= 50000);
+                        query = query.Where(x => x.TotalAmountOb <= -10000 && x.TotalAmountOb > -50000);
                         break;
                     case "99999":
-                        query = query.Where(x => x.TotalAmountOb > 50000 && x.TotalAmountOb <= 100000);
+                        query = query.Where(x => x.TotalAmountOb <= -50000 && x.TotalAmountOb > -100000);
                         break;
                     case "149999":
-                        query = query.Where(x => x.TotalAmountOb > 100000 && x.TotalAmountOb <= 150000);
+                        query = query.Where(x => x.TotalAmountOb <= -100000 && x.TotalAmountOb > -150000);
                         break;
                     case "199999":
-                        query = query.Where(x => x.TotalAmountOb > 150000 && x.TotalAmountOb <= 200000);
+                        query = query.Where(x => x.TotalAmountOb <= -150000 && x.TotalAmountOb > -200000);
                         break;
                     case "299999":
-                        query = query.Where(x => x.TotalAmountOb > 200000 && x.TotalAmountOb <= 300000);
+                        query = query.Where(x => x.TotalAmountOb <= -200000 && x.TotalAmountOb > -300000);
                         break;
                     case "499999":
-                        query = query.Where(x => x.TotalAmountOb > 300000 && x.TotalAmountOb <= 500000);
+                        query = query.Where(x => x.TotalAmountOb <= -300000 && x.TotalAmountOb > 500000);
                         break;
                     case "500000":
-                        query = query.Where(x => x.TotalAmountOb > 500000);
+                        query = query.Where(x => x.TotalAmountOb <= -500000);
                         break;
                     default:
                         break;

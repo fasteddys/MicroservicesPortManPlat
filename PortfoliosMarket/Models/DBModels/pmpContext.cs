@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace Contracts.Models.DBModels
+namespace PortfoliosMarket.Models.DBModels
 {
     public partial class pmpContext : DbContext
     {
@@ -28,10 +28,8 @@ namespace Contracts.Models.DBModels
         public virtual DbSet<PortfolioInvestor> PortfolioInvestors { get; set; }
         public virtual DbSet<PortfolioMarket> PortfolioMarkets { get; set; }
         public virtual DbSet<PortfolioParticipant> PortfolioParticipants { get; set; }
-        public virtual DbSet<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual DbSet<Price> Prices { get; set; }
         public virtual DbSet<Procedure> Procedures { get; set; }
-        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -896,31 +894,6 @@ namespace Contracts.Models.DBModels
                     .HasConstraintName("portfolio_participant_portfolio_id_foreign");
             });
 
-            modelBuilder.Entity<PortfolioProcedure>(entity =>
-            {
-                entity.ToTable("portfolio_procedure");
-
-                entity.HasIndex(e => e.PortfolioId, "portfolio_procedure_portfolio_id_foreign_idx");
-
-                entity.HasIndex(e => e.ProcedureId, "portfolio_procedure_procedure_id_idx");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
-
-                entity.Property(e => e.ProcedureId).HasColumnName("procedure_id");
-
-                entity.HasOne(d => d.Portfolio)
-                    .WithMany(p => p.PortfolioProcedures)
-                    .HasForeignKey(d => d.PortfolioId)
-                    .HasConstraintName("portfolio_procedure_portfolio_id_foreign");
-
-                entity.HasOne(d => d.Procedure)
-                    .WithMany(p => p.PortfolioProcedures)
-                    .HasForeignKey(d => d.ProcedureId)
-                    .HasConstraintName("portfolio_procedure_procedure_id_foreign");
-            });
-
             modelBuilder.Entity<Price>(entity =>
             {
                 entity.ToTable("prices");
@@ -985,7 +958,7 @@ namespace Contracts.Models.DBModels
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
 
                 entity.Property(e => e.Court)
-                    .HasMaxLength(100)
+                    .HasMaxLength(45)
                     .HasColumnName("court");
 
                 entity.Property(e => e.CourtCity)
@@ -1081,6 +1054,7 @@ namespace Contracts.Models.DBModels
                 entity.HasOne(d => d.ContractNavigation)
                     .WithMany(p => p.Procedures)
                     .HasForeignKey(d => d.ContractId)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("procedures_contract_id_foreign");
 
                 entity.HasOne(d => d.PortfolioNavigation)
@@ -1088,21 +1062,6 @@ namespace Contracts.Models.DBModels
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("procedures_portfolio_id_foreign");
-            });
-
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.ToTable("users");
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Password)
-                    .HasMaxLength(45)
-                    .HasColumnName("password");
-
-                entity.Property(e => e.Username)
-                    .HasMaxLength(45)
-                    .HasColumnName("username");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace Contracts.Models.DBModels
+namespace PortfoliosMarket.Models.DBModels
 {
-    public partial class Portfolio
+    public partial class PortfolioMarket
     {
-        public Portfolio()
+        public PortfolioMarket()
         {
             Collaterals = new HashSet<Collateral>();
             ContractsNavigation = new HashSet<Contract>();
@@ -18,30 +18,18 @@ namespace Contracts.Models.DBModels
             PortfolioContracts = new HashSet<PortfolioContract>();
             PortfolioInvestors = new HashSet<PortfolioInvestor>();
             PortfolioParticipants = new HashSet<PortfolioParticipant>();
-            PortfolioProcedures = new HashSet<PortfolioProcedure>();
             Prices = new HashSet<Price>();
             Procedures = new HashSet<Procedure>();
         }
-
         public int Id { get; set; }
-        public string HolderEntity { get; set; }
-        public string Portfolio1 { get; set; }
-        public string Subportfolio { get; set; }
-        public string OperationType { get; set; }
-        public DateTime? CreationDate { get; set; }
-        public DateTime? CutOffDate { get; set; }
-        public DateTime? SigningDate { get; set; }
-        public DateTime? ClosingDate { get; set; }
-        public decimal? CutOffOb { get; set; }
-        public decimal? SigningOb { get; set; }
-        public decimal? ClosingOb { get; set; }
+        public string Holder { get; set; }
+        public string Project { get; set; }
         public string Investor { get; set; }
-        public string Tipology { get; set; }
-        public int? Contracts { get; set; }
-        public int? Year { get; set; }
-        public string Status { get; set; }
-        public bool? Soved { get; set; }
+        public string Year { get; set; }
+        public string Typology { get; set; }
         public string DebtType { get; set; }
+        public string Value { get; set; }
+        public byte? Status { get; set; }
 
         public virtual ICollection<Collateral> Collaterals { get; set; }
         public virtual ICollection<Contract> ContractsNavigation { get; set; }
@@ -52,7 +40,6 @@ namespace Contracts.Models.DBModels
         public virtual ICollection<PortfolioContract> PortfolioContracts { get; set; }
         public virtual ICollection<PortfolioInvestor> PortfolioInvestors { get; set; }
         public virtual ICollection<PortfolioParticipant> PortfolioParticipants { get; set; }
-        public virtual ICollection<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual ICollection<Price> Prices { get; set; }
         public virtual ICollection<Procedure> Procedures { get; set; }
     }
