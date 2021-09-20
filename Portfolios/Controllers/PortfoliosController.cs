@@ -133,7 +133,7 @@ namespace Portfolios.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = dataPortfolios;
+                response.Portfolios = dataPortfolios;
             }
             catch (Exception ex)
             {

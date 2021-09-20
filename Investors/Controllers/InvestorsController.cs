@@ -29,7 +29,7 @@ namespace Investors.Controllers
             {
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = _pmpContext.Investors.ToList();
+                response.Investors = _pmpContext.Investors.ToList();
             }
             catch (Exception ex)
             {
@@ -56,7 +56,7 @@ namespace Investors.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = investors;
+                response.Investors = investors;
             }
             catch (Exception ex)
             {

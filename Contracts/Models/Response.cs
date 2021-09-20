@@ -7,7 +7,7 @@ namespace Contracts.Models
     {
         public int ResponseCode { get; set; }
         public string Message { get; set; }
-        public List<Contract> Documents { get; set; }
+        public List<Contract> Contracts { get; set; }
         public Summary Summary { get; set; }
         public List<Participant> Participants { get; set; }
         public List<Procedure> Procedures { get; set; }

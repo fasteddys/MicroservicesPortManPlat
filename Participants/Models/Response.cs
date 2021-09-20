@@ -7,6 +7,6 @@ namespace Participants.Models
     {
         public int ResponseCode { get; set; }
         public string Message { get; set; }
-        public IEnumerable<Participant> Documents { get; set; }
+        public IEnumerable<Participant> Participants { get; set; }
     }
 }

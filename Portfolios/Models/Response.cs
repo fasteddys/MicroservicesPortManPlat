@@ -7,6 +7,6 @@ namespace Portfolios.Models
     {
         public int ResponseCode { get; set; }
         public string Message { get; set; }
-        public IEnumerable<Portfolio> Documents { get; set; }
+        public IEnumerable<Portfolio> Portfolios { get; set; }
     }
 }

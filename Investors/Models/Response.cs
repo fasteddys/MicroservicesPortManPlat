@@ -7,6 +7,6 @@ namespace Investors.Models
     {
         public int ResponseCode { get; set; }
         public string Message { get; set; }
-        public IEnumerable<Investor> Documents { get; set; }
+        public IEnumerable<Investor> Investors { get; set; }
     }
 }

@@ -31,7 +31,7 @@ namespace Contracts.Controllers
                 var contracts = _pmpContext.Contracts.ToList();
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = contracts;
+                response.Contracts = contracts;
             }
             catch (Exception ex)
             {
@@ -137,7 +137,7 @@ namespace Contracts.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = contracts;
+                response.Contracts = contracts;
                 response.Investors = investors;
                 response.Participants = participants;
                 response.Procedures = procedures;
@@ -280,7 +280,7 @@ namespace Contracts.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = contracts;
+                response.Contracts = contracts;
                 response.Investors = investors;
                 response.Participants = participants;
                 response.Procedures = procedures;

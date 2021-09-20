@@ -30,7 +30,7 @@ namespace Participants.Controllers
             {
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = _pmpContext.Participants.ToList();
+                response.Participants = _pmpContext.Participants.ToList();
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace Participants.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = participants;
+                response.Participants = participants;
             }
             catch (Exception ex)
             {

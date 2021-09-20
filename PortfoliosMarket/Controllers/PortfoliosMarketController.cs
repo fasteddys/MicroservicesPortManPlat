@@ -93,7 +93,7 @@ namespace PortfoliosMarket.Controllers
 
                 response.ResponseCode = 200;
                 response.Message = "Success";
-                response.Documents = dataPortfolios;
+                response.PortfolioMarkets = dataPortfolios;
             }
             catch (Exception ex)
             {
