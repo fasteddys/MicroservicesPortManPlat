@@ -24,7 +24,7 @@ namespace PortfoliosMarket.Controllers
         }
 
         [HttpGet]
-        public Response Get(string Holder, string Project, string Year, string investor,  string Tipology,  string DebtType, string Value, bool? Status, bool isTableFilter = false)
+        public Response Get(string Holder, string Project, string Year, string investor,  string Tipology,  string DebtType, string Value, bool isTableFilter = false)
         {
             Response response = new Response();
 
@@ -46,22 +46,17 @@ namespace PortfoliosMarket.Controllers
                         portfolios = portfolios.Where(x => x.Project.ToLower() == Project.ToLower());
                 }
 
-
                 if (!string.IsNullOrEmpty(investor))
                     portfolios = portfolios.Where(x => x.Investor.ToLower().Contains(investor.ToLower()));
                 if (!string.IsNullOrEmpty(Year))
-                    portfolios = portfolios.Where(x => x.Year.ToString().ToLower().Contains(Year.ToString().ToLower()));
+                    portfolios = portfolios.Where(x => x.Year.ToLower().Contains(Year.ToLower()));
                 if (!string.IsNullOrEmpty(Tipology))
                     portfolios = portfolios.Where(x => x.Typology.ToLower().Contains(Tipology.ToLower()));
                 if (!string.IsNullOrEmpty(DebtType))
-                    portfolios = portfolios.Where(x => x.DebtType.ToString().ToLower().Contains(DebtType.ToString().ToLower()));
+                    portfolios = portfolios.Where(x => x.DebtType.ToLower().Contains(DebtType.ToLower()));
                 if (!string.IsNullOrEmpty(Value))
                     portfolios = portfolios.Where(x => x.Value.ToLower().Contains(Value.ToLower()));
-                if (Status != null)
-                    portfolios = portfolios.Where(x => x.Status.ToString().ToLower().Contains(Status.ToString().ToLower()));
-   
-
-
+                
                 var dataPortfolios = portfolios.ToList();
 
                 dataPortfolios.ForEach(x => x.PortfolioContracts.ToList().ForEach(x => x.Portfolio = null));
