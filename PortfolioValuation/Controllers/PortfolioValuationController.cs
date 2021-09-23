@@ -150,6 +150,17 @@ namespace PortfolioValuation.Controllers
                 response.Participants = participants;
                 response.Investors = investors;
                 response.Procedures = procedures;
+                response.Summary = new Summary
+                {
+                    Contracts = contracts.Count(),
+                    Debtors = contracts.Sum(x => x.NumParticipants ?? 0),
+                    Guarantors = contracts.Sum(x => x.NumGuarantors ?? 0),
+                    SecuredOB = 0,
+                    SecuredPrice = 0,
+                    TotalOB = contracts.Sum(x => x.TotalAmountOb ?? 0),
+                    UnsecuredOB = 0,
+                    UnsecuredPrice = 0
+                };
             }
             catch (Exception ex)
             {
