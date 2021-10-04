@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PortfolioValuation.Models
+namespace PMaP.Models.PortfolioEvaluations
 {
-    public class PortfolioValuationRequest
+    public class PortfolioEvaluationRequest
     {
         public DateTime? From { get; set; }
         public DateTime? To { get; set; }

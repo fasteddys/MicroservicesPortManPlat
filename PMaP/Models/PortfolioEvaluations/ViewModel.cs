@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace PortfolioValuation.Models.ViewModels.PortfolioValuation
+namespace PMaP.Models.PortfolioEvaluations
 {
     public class ViewModel
     {

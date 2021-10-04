@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Procedures", "Procedures\Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortfoliosMarket", "PortfoliosMarket\PortfoliosMarket.csproj", "{BA437086-7638-4AEE-AD06-C4282081C69B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMaP", "PMaP\PMaP.csproj", "{89F7B3ED-37CA-4D99-977C-B0B3B77A01DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{BA437086-7638-4AEE-AD06-C4282081C69B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA437086-7638-4AEE-AD06-C4282081C69B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA437086-7638-4AEE-AD06-C4282081C69B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89F7B3ED-37CA-4D99-977C-B0B3B77A01DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89F7B3ED-37CA-4D99-977C-B0B3B77A01DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89F7B3ED-37CA-4D99-977C-B0B3B77A01DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89F7B3ED-37CA-4D99-977C-B0B3B77A01DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
