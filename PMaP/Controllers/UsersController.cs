@@ -3,6 +3,7 @@ using PMaP.Models.Authenticate;
 using PMaP.Models.Users;
 using PMaP.Services;
 using System;
+using System.Net;
 
 namespace PMaP.Controllers
 {
@@ -23,7 +24,7 @@ namespace PMaP.Controllers
             var response = _userService.Authenticate(model);
 
             if (response == null)
-                return BadRequest(new { Message = "Username or password is incorrect" });
+                return BadRequest(new { RespCode = (int)HttpStatusCode.BadRequest, Message = "Username or password is incorrect" });
 
             return Ok(response);
         }
