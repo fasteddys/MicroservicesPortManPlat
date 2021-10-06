@@ -13,6 +13,14 @@ using System.Text;
 
 namespace PMaP.Services
 {
+    public interface IUserService
+    {
+        AuthenticateResponse Authenticate(AuthenticateRequest model);
+        string Add(AddUserRequest model);
+        User GetById(int id);
+        IEnumerable<User> GetAll();
+    }
+
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;

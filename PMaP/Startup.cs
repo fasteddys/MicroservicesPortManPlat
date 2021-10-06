@@ -33,6 +33,7 @@ namespace PMaP
             services.AddScoped<IPortfolioEvaluationService, PortfolioEvaluationService>();
             services.AddScoped<IPortfoliosMarketService, PortfoliosMarketService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IHttpService, HttpService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

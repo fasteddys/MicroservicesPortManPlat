@@ -193,10 +193,12 @@ namespace PortfolioValuation.Controllers
                 List<PortfolioContract> portfolioContracts = new List<PortfolioContract>();
                 List<PortfolioInvestor> portfolioInvestors = new List<PortfolioInvestor>();
                 List<PortfolioParticipant> portfolioParticipants = new List<PortfolioParticipant>();
+                List<PortfolioProcedure> portfolioProcedures = new List<PortfolioProcedure>();
 
                 var contractIds = request.Contracts.Select(x => x.Id).ToList();
                 var investorIds = request.Investors.Select(x => x.Id).ToList();
                 var participantIds = request.Participants.Select(x => x.Id).ToList();
+                var procedureIds = request.Procedures.Select(x => x.Id).ToList();
 
                 foreach (var contractId in contractIds)
                 {
@@ -213,6 +215,11 @@ namespace PortfolioValuation.Controllers
                     portfolioParticipants.Add(new PortfolioParticipant { ParticipantId = participantId });
                 }
 
+                foreach (var procedureId in procedureIds)
+                {
+                    portfolioProcedures.Add(new PortfolioProcedure { ProcedureId = procedureId });
+                }
+
                 Portfolio portfolio = new Portfolio
                 {
                     Portfolio1 = request.ViewModel.Portfolio,
@@ -224,7 +231,8 @@ namespace PortfolioValuation.Controllers
                     SigningDate = request.ViewModel.DateSigning,
                     PortfolioContracts = portfolioContracts,
                     PortfolioInvestors = portfolioInvestors,
-                    PortfolioParticipants = portfolioParticipants
+                    PortfolioParticipants = portfolioParticipants,
+                    PortfolioProcedures = portfolioProcedures
                 };
                 _pmpContext.Add(portfolio);
                 await _pmpContext.SaveChangesAsync();
@@ -252,16 +260,19 @@ namespace PortfolioValuation.Controllers
 
                 List<Investor> investors = new List<Investor>();
                 List<Participant> participants = new List<Participant>();
+                List<Procedure> procedures = new List<Procedure>();
                 foreach (var item in request.Contracts)
                 {
                     investors.AddRange(item.Investors);
                     participants.AddRange(item.Participants);
+                    procedures.AddRange(item.Procedures);
                 }
 
                 var contractIds = request.Contracts.Select(x => x.Id).ToList();
                 var investorIds = investors.Select(x => x.Id).ToList();
                 var participantIds = participants.Select(x => x.Id).ToList();
-                
+                var procedureIds = procedures.Select(x => x.Id).ToList();
+
                 // Remove existing data
                 var portfolioContractsDelete = _pmpContext.PortfolioContracts.Where(x => x.PortfolioId == portfolio.Id && contractIds.Contains(x.ContractId ?? 0)).ToList();
                 _pmpContext.RemoveRange(portfolioContractsDelete);
@@ -272,12 +283,16 @@ namespace PortfolioValuation.Controllers
                 var portfolioParticipantsDelete = _pmpContext.PortfolioParticipants.Where(x => x.PortfolioId == portfolio.Id && participantIds.Contains(x.ParticipantId ?? 0)).ToList();
                 _pmpContext.RemoveRange(portfolioParticipantsDelete);
 
+                var portfolioProceduresDelete = _pmpContext.PortfolioProcedures.Where(x => x.PortfolioId == portfolio.Id && procedureIds.Contains(x.ProcedureId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioProceduresDelete);
+
                 await _pmpContext.SaveChangesAsync();
 
                 // prepare entities
                 List<PortfolioContract> portfolioContracts = new List<PortfolioContract>();
                 List<PortfolioInvestor> portfolioInvestors = new List<PortfolioInvestor>();
                 List<PortfolioParticipant> portfolioParticipants = new List<PortfolioParticipant>();
+                List<PortfolioProcedure> portfolioProcedures = new List<PortfolioProcedure>();
 
                 foreach (var contractId in contractIds)
                 {
@@ -291,10 +306,15 @@ namespace PortfolioValuation.Controllers
                 {
                     portfolioParticipants.Add(new PortfolioParticipant { ParticipantId = participantId, PortfolioId = portfolio.Id });
                 }
+                foreach (var procedureId in procedureIds)
+                {
+                    portfolioProcedures.Add(new PortfolioProcedure { ProcedureId = procedureId, PortfolioId = portfolio.Id });
+                }
 
                 portfolio.PortfolioContracts = portfolioContracts;
                 portfolio.PortfolioInvestors = portfolioInvestors;
                 portfolio.PortfolioParticipants = portfolioParticipants;
+                portfolio.PortfolioProcedures = portfolioProcedures;
 
                 portfolio.ContractsNavigation = new List<Contract>();
 

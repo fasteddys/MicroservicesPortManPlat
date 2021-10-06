@@ -1,46 +1,29 @@
 ﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using PMaP.Helpers;
-using PMaP.Models.DBModels;
 using PMaP.Models.Homes;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace PMaP.Services
 {
+    public interface IHomeService
+    {
+        Task<HomeResponse> GetAll();
+    }
+
     public class HomeService : IHomeService
     {
         private readonly AppSettings _appSettings;
+        private IHttpService _httpService;
 
-        public HomeService(IOptions<AppSettings> appSettings)
+        public HomeService(IOptions<AppSettings> appSettings, IHttpService httpService)
         {
             _appSettings = appSettings.Value;
+            _httpService = httpService;
         }
 
         public async Task<HomeResponse> GetAll()
         {
-            HomeResponse homeResponse = new HomeResponse();
-
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(_appSettings.HomeUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //HTTP GET
-                var responseTask = await client.GetAsync("home");
-
-                var result = responseTask;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = await result.Content.ReadAsStringAsync();
-                    homeResponse = JsonConvert.DeserializeObject<HomeResponse>(readTask);
-                }
-            }
-
-            return homeResponse;
+            return await _httpService.Get<HomeResponse>(_appSettings.HomeUrl + "/home") ?? new HomeResponse();
         }
     }
 }

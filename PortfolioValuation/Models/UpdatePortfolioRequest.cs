@@ -1,9 +1,6 @@
 ﻿using PortfolioValuation.Models.DBModels;
 using PortfolioValuation.Models.ViewModels.PortfolioValuation;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PortfolioValuation.Models
 {

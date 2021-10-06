@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using PMaP.Helpers;
 using PMaP.Models.Portfolios;
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace PMaP.Services
@@ -18,10 +15,12 @@ namespace PMaP.Services
     public class PortfolioService : IPortfolioService
     {
         private readonly AppSettings _appSettings;
+        private IHttpService _httpService;
 
-        public PortfolioService(IOptions<AppSettings> appSettings)
+        public PortfolioService(IOptions<AppSettings> appSettings, IHttpService httpService)
         {
             _appSettings = appSettings.Value;
+            _httpService = httpService;
         }
 
         public async Task<PortfolioResponse> GetAll(string portfolio, string subportfolio, DateTime? creation_date, DateTime? cut_off_date, DateTime? signing_date, DateTime? closing_date,
@@ -46,25 +45,7 @@ namespace PMaP.Services
             if (year != null && year > 0)
                 queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "year=" + year;
 
-            PortfolioResponse portfolioResponse = new PortfolioResponse();
-
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(_appSettings.PortfolioUrl);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //HTTP GET
-                var responseTask = await client.GetAsync("portfolios" + queryStrings);
-
-                var result = responseTask;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = await result.Content.ReadAsStringAsync();
-                    portfolioResponse = JsonConvert.DeserializeObject<PortfolioResponse>(readTask);
-                }
-            }
-
-            return portfolioResponse;
+            return await _httpService.Get<PortfolioResponse>(_appSettings.PortfolioUrl + "/portfolios" + queryStrings) ?? new PortfolioResponse();
         }
     }
 }

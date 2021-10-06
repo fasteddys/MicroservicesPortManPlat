@@ -8,6 +8,7 @@ namespace PMaP.Models.Portfolios
         public List<Contract> Contracts { get; set; }
         public List<Participant> Participants { get; set; }
         public List<Investor> Investors { get; set; }
+        public List<Procedure> Procedures { get; set; }
 
         public ViewModel ViewModel { get; set; }
     }
