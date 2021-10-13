@@ -74,6 +74,7 @@ namespace PortfolioValuation.Controllers
                             portfolioContract.Portfolio = portfolio;
                         }
                     }
+                    contract.ContractTypeNavigation = new Models.DBModels.ContractType();
                 }
 
                 List<Participant> participants = new List<Participant>();
@@ -473,10 +474,10 @@ namespace PortfolioValuation.Controllers
                 query = query.Where(x => x.Participants.Any(y => y.Region.ToLower() == request.Region.ToLower()));
             if (request.ContractTypes != null && request.ContractTypes.Count() > 0)
             {
-                var contractTypes = request.ContractTypes.Where(x => x.IsSelected).Select(x => x.Name.ToLower()).ToList();
+                var contractTypes = request.ContractTypes.Where(x => x.IsSelected).Select(x => x.Value.ToLower()).ToList();
                 if (contractTypes.Count() > 0)
                 {
-                    query = query.Where(x => contractTypes.Contains(x.ContractType.ToLower()));
+                    query = query.Where(x => contractTypes.Contains(x.ContractTypeNavigation.Value.ToLower()));
                 }
             }
             if (request.ExcludedContractIds != null && request.ExcludedContractIds.Count() > 0 && request.ReflectExcludedContractIds)

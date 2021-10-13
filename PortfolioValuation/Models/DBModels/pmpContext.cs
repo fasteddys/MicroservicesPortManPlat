@@ -19,6 +19,7 @@ namespace PortfolioValuation.Models.DBModels
 
         public virtual DbSet<Collateral> Collaterals { get; set; }
         public virtual DbSet<Contract> Contracts { get; set; }
+        public virtual DbSet<ContractType> ContractTypes { get; set; }
         public virtual DbSet<Home> Homes { get; set; }
         public virtual DbSet<Insolvency> Insolvencies { get; set; }
         public virtual DbSet<Investor> Investors { get; set; }
@@ -26,6 +27,7 @@ namespace PortfolioValuation.Models.DBModels
         public virtual DbSet<Portfolio> Portfolios { get; set; }
         public virtual DbSet<PortfolioContract> PortfolioContracts { get; set; }
         public virtual DbSet<PortfolioInvestor> PortfolioInvestors { get; set; }
+        public virtual DbSet<PortfolioMarket> PortfolioMarkets { get; set; }
         public virtual DbSet<PortfolioParticipant> PortfolioParticipants { get; set; }
         public virtual DbSet<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual DbSet<Price> Prices { get; set; }
@@ -176,6 +178,8 @@ namespace PortfolioValuation.Models.DBModels
             {
                 entity.ToTable("contracts");
 
+                entity.HasIndex(e => e.ContractTypeId, "contracts_contract_type_id_foreign_idx");
+
                 entity.HasIndex(e => e.PortfolioId, "contracts_portfolio_id_foreign");
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -191,6 +195,8 @@ namespace PortfolioValuation.Models.DBModels
                 entity.Property(e => e.ContractType)
                     .HasMaxLength(45)
                     .HasColumnName("contract_type");
+
+                entity.Property(e => e.ContractTypeId).HasColumnName("contract_type_id");
 
                 entity.Property(e => e.Currency)
                     .HasMaxLength(45)
@@ -314,11 +320,31 @@ namespace PortfolioValuation.Models.DBModels
 
                 entity.Property(e => e.UnpaidInstalments).HasColumnName("unpaid_instalments");
 
+                entity.HasOne(d => d.ContractTypeNavigation)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.ContractTypeId)
+                    .HasConstraintName("contracts_contract_type_id_foreign");
+
                 entity.HasOne(d => d.PortfolioNavigation)
                     .WithMany(p => p.ContractsNavigation)
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("contracts_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<ContractType>(entity =>
+            {
+                entity.ToTable("contract_types");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(45)
+                    .HasColumnName("value");
             });
 
             modelBuilder.Entity<Home>(entity =>
@@ -744,6 +770,8 @@ namespace PortfolioValuation.Models.DBModels
                     .HasPrecision(15, 2)
                     .HasColumnName("cut_off_ob");
 
+                entity.Property(e => e.DebtType).HasMaxLength(45);
+
                 entity.Property(e => e.HolderEntity)
                     .HasMaxLength(45)
                     .HasColumnName("holder_entity");
@@ -767,6 +795,8 @@ namespace PortfolioValuation.Models.DBModels
                 entity.Property(e => e.SigningOb)
                     .HasPrecision(15, 2)
                     .HasColumnName("signing_ob");
+
+                entity.Property(e => e.Soved).HasColumnName("soved");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(45)
@@ -835,6 +865,33 @@ namespace PortfolioValuation.Models.DBModels
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("portfolio_investor_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<PortfolioMarket>(entity =>
+            {
+                entity.ToTable("portfolio_market");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+
+                entity.Property(e => e.DebtType)
+                    .HasMaxLength(45)
+                    .HasColumnName("Debt Type");
+
+                entity.Property(e => e.Holder).HasMaxLength(45);
+
+                entity.Property(e => e.Investor).HasMaxLength(45);
+
+                entity.Property(e => e.Project).HasMaxLength(45);
+
+                entity.Property(e => e.Typology).HasMaxLength(45);
+
+                entity.Property(e => e.Value).HasMaxLength(45);
+
+                entity.Property(e => e.Year)
+                    .HasMaxLength(45)
+                    .HasColumnName("year");
             });
 
             modelBuilder.Entity<PortfolioParticipant>(entity =>

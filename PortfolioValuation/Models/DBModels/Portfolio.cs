@@ -40,6 +40,8 @@ namespace PortfolioValuation.Models.DBModels
         public int? Contracts { get; set; }
         public int? Year { get; set; }
         public string Status { get; set; }
+        public byte? Soved { get; set; }
+        public string DebtType { get; set; }
 
         public virtual ICollection<Collateral> Collaterals { get; set; }
         public virtual ICollection<Contract> ContractsNavigation { get; set; }
