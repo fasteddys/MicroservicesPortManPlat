@@ -318,6 +318,9 @@ namespace PortfolioValuation.Controllers
                 portfolio.PortfolioProcedures = portfolioProcedures;
 
                 portfolio.ContractsNavigation = new List<Contract>();
+                portfolio.Investors = new List<Investor>();
+                portfolio.Participants = new List<Participant>();
+                portfolio.Procedures = new List<Procedure>();
 
                 _pmpContext.Update(portfolio);
                 await _pmpContext.SaveChangesAsync();
@@ -379,15 +382,18 @@ namespace PortfolioValuation.Controllers
 
                 List<Investor> investors = new List<Investor>();
                 List<Participant> participants = new List<Participant>();
+                List<Procedure> procedures = new List<Procedure>();
                 foreach (var item in contracts)
                 {
                     investors.AddRange(item.Investors);
                     participants.AddRange(item.Participants);
+                    procedures.AddRange(item.Procedures);
                 }
 
                 var contractIds = contracts.Select(x => x.Id).ToList();
                 var investorIds = investors.Select(x => x.Id).ToList();
                 var participantIds = participants.Select(x => x.Id).ToList();
+                var procedureIds = procedures.Select(x => x.Id).ToList();
 
                 // Remove data
                 var portfolioContractsDelete = _pmpContext.PortfolioContracts.Where(x => x.PortfolioId == portfolio.Id && contractIds.Contains(x.ContractId ?? 0)).ToList();
@@ -398,6 +404,9 @@ namespace PortfolioValuation.Controllers
 
                 var portfolioParticipantsDelete = _pmpContext.PortfolioParticipants.Where(x => x.PortfolioId == portfolio.Id && participantIds.Contains(x.ParticipantId ?? 0)).ToList();
                 _pmpContext.RemoveRange(portfolioParticipantsDelete);
+
+                var portfolioProceduresDelete = _pmpContext.PortfolioProcedures.Where(x => x.PortfolioId == portfolio.Id && procedureIds.Contains(x.ProcedureId ?? 0)).ToList();
+                _pmpContext.RemoveRange(portfolioProceduresDelete);
 
                 await _pmpContext.SaveChangesAsync();
 
