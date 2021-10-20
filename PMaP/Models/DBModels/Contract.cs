@@ -23,6 +23,7 @@ namespace PMaP.Models.DBModels
         public string Portfolio { get; set; }
         public string Subportfolio { get; set; }
         public DateTime? ProcessDate { get; set; }
+        public int? ContractTypeId { get; set; }
         public string ContractType { get; set; }
         public string PerformingStatus { get; set; }
         public string DebtType { get; set; }
@@ -59,6 +60,7 @@ namespace PMaP.Models.DBModels
         public byte? Reo { get; set; }
         public decimal? ReoAmount { get; set; }
 
+        public virtual ContractType ContractTypeNavigation { get; set; }
         public virtual Portfolio PortfolioNavigation { get; set; }
         public virtual ICollection<Collateral> Collaterals { get; set; }
         public virtual ICollection<Investor> Investors { get; set; }

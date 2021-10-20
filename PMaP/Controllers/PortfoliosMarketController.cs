@@ -17,9 +17,10 @@ namespace PMaP.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType, string Value, bool isTableFilter = false)
+        public async Task<IActionResult> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType,
+            string Value, int? YearFrom, int? YearTo, decimal? ValueFrom, decimal? ValueTo, bool isTableFilter = false)
         {
-            var portfoliosMarkets = await _portfoliosMarketService.GetAll(Holder, Project, Year, investor, Tipology, DebtType, Value, isTableFilter);
+            var portfoliosMarkets = await _portfoliosMarketService.GetAll(Holder, Project, Year, investor, Tipology, DebtType, Value, YearFrom, YearTo, ValueFrom, ValueTo, isTableFilter);
             return Ok(portfoliosMarkets);
         }
     }

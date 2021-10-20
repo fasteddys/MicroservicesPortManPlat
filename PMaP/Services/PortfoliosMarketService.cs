@@ -7,7 +7,8 @@ namespace PMaP.Services
 {
     public interface IPortfoliosMarketService
     {
-        Task<PortfoliosMarketResponse> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType, string Value, bool isTableFilter = false);
+        Task<PortfoliosMarketResponse> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType,
+            string Value, int? YearFrom, int? YearTo, decimal? ValueFrom, decimal? ValueTo, bool isTableFilter = false);
     }
 
     public class PortfoliosMarketService : IPortfoliosMarketService
@@ -21,7 +22,8 @@ namespace PMaP.Services
             _httpService = httpService;
         }
 
-        public async Task<PortfoliosMarketResponse> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType, string Value, bool isTableFilter = false)
+        public async Task<PortfoliosMarketResponse> GetAll(string Holder, string Project, string Year, string investor, string Tipology, string DebtType,
+            string Value, int? YearFrom, int? YearTo, decimal? ValueFrom, decimal? ValueTo, bool isTableFilter = false)
         {
             string queryStrings = "?isTableFilter=" + isTableFilter;
 
@@ -39,6 +41,14 @@ namespace PMaP.Services
                 queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "Value=" + Value;
             if (!string.IsNullOrEmpty(Year))
                 queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "Year=" + Year;
+            if (YearFrom != null)
+                queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "YearFrom=" + YearFrom;
+            if (YearTo != null)
+                queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "YearTo=" + YearTo;
+            if (ValueFrom != null)
+                queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "ValueFrom=" + ValueFrom;
+            if (ValueTo != null)
+                queryStrings += (!string.IsNullOrEmpty(queryStrings) ? "&" : "?") + "ValueTo=" + ValueTo;
 
             return await _httpService.Get<PortfoliosMarketResponse>(_appSettings.PortfoliosMarketUrl + "/portfoliosMarket" + queryStrings) ?? new PortfoliosMarketResponse();
         }
