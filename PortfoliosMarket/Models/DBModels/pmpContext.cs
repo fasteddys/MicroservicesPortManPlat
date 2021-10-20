@@ -19,6 +19,7 @@ namespace PortfoliosMarket.Models.DBModels
 
         public virtual DbSet<Collateral> Collaterals { get; set; }
         public virtual DbSet<Contract> Contracts { get; set; }
+        public virtual DbSet<ContractType> ContractTypes { get; set; }
         public virtual DbSet<Home> Homes { get; set; }
         public virtual DbSet<Insolvency> Insolvencies { get; set; }
         public virtual DbSet<Investor> Investors { get; set; }
@@ -28,14 +29,17 @@ namespace PortfoliosMarket.Models.DBModels
         public virtual DbSet<PortfolioInvestor> PortfolioInvestors { get; set; }
         public virtual DbSet<PortfolioMarket> PortfolioMarkets { get; set; }
         public virtual DbSet<PortfolioParticipant> PortfolioParticipants { get; set; }
+        public virtual DbSet<PortfolioProcedure> PortfolioProcedures { get; set; }
         public virtual DbSet<Price> Prices { get; set; }
         public virtual DbSet<Procedure> Procedures { get; set; }
+        public virtual DbSet<Profile> Profiles { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("name=pmpDb", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.26-mysql"));
+                optionsBuilder.UseMySql("name=pmpDb", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql"));
             }
         }
 
@@ -175,6 +179,8 @@ namespace PortfoliosMarket.Models.DBModels
             {
                 entity.ToTable("contracts");
 
+                entity.HasIndex(e => e.ContractTypeId, "contracts_contract_type_id_foreign_idx");
+
                 entity.HasIndex(e => e.PortfolioId, "contracts_portfolio_id_foreign");
 
                 entity.Property(e => e.Id).HasColumnName("id");
@@ -190,6 +196,8 @@ namespace PortfoliosMarket.Models.DBModels
                 entity.Property(e => e.ContractType)
                     .HasMaxLength(45)
                     .HasColumnName("contract_type");
+
+                entity.Property(e => e.ContractTypeId).HasColumnName("contract_type_id");
 
                 entity.Property(e => e.Currency)
                     .HasMaxLength(45)
@@ -313,11 +321,31 @@ namespace PortfoliosMarket.Models.DBModels
 
                 entity.Property(e => e.UnpaidInstalments).HasColumnName("unpaid_instalments");
 
+                entity.HasOne(d => d.ContractTypeNavigation)
+                    .WithMany(p => p.Contracts)
+                    .HasForeignKey(d => d.ContractTypeId)
+                    .HasConstraintName("contracts_contract_type_id_foreign");
+
                 entity.HasOne(d => d.PortfolioNavigation)
                     .WithMany(p => p.ContractsNavigation)
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("contracts_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<ContractType>(entity =>
+            {
+                entity.ToTable("contract_types");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(45)
+                    .HasColumnName("value");
             });
 
             modelBuilder.Entity<Home>(entity =>
@@ -854,17 +882,25 @@ namespace PortfoliosMarket.Models.DBModels
 
                 entity.Property(e => e.Holder).HasMaxLength(45);
 
+                entity.Property(e => e.HolderLogo)
+                    .HasMaxLength(100)
+                    .HasColumnName("holder_logo");
+
                 entity.Property(e => e.Investor).HasMaxLength(45);
+
+                entity.Property(e => e.InvestorLogo)
+                    .HasMaxLength(200)
+                    .HasColumnName("investor_logo");
 
                 entity.Property(e => e.Project).HasMaxLength(45);
 
                 entity.Property(e => e.Typology).HasMaxLength(45);
 
-                entity.Property(e => e.Value).HasMaxLength(45);
+                entity.Property(e => e.Value).HasPrecision(15, 2);
 
-                entity.Property(e => e.Year)
-                    .HasMaxLength(45)
-                    .HasColumnName("year");
+                entity.Property(e => e.YearFrom).HasColumnName("yearFrom");
+
+                entity.Property(e => e.YearTo).HasColumnName("yearTo");
             });
 
             modelBuilder.Entity<PortfolioParticipant>(entity =>
@@ -892,6 +928,33 @@ namespace PortfoliosMarket.Models.DBModels
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("portfolio_participant_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<PortfolioProcedure>(entity =>
+            {
+                entity.ToTable("portfolio_procedure");
+
+                entity.HasIndex(e => e.PortfolioId, "portfolio_procedure_portfolio_id_foreign_idx");
+
+                entity.HasIndex(e => e.ProcedureId, "portfolio_procedure_procedure_id_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.PortfolioId).HasColumnName("portfolio_id");
+
+                entity.Property(e => e.ProcedureId).HasColumnName("procedure_id");
+
+                entity.HasOne(d => d.Portfolio)
+                    .WithMany(p => p.PortfolioProcedures)
+                    .HasForeignKey(d => d.PortfolioId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_procedure_portfolio_id_foreign");
+
+                entity.HasOne(d => d.Procedure)
+                    .WithMany(p => p.PortfolioProcedures)
+                    .HasForeignKey(d => d.ProcedureId)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("portfolio_procedure_procedure_id_foreign");
             });
 
             modelBuilder.Entity<Price>(entity =>
@@ -958,7 +1021,7 @@ namespace PortfoliosMarket.Models.DBModels
                 entity.Property(e => e.ContractId).HasColumnName("contract_id");
 
                 entity.Property(e => e.Court)
-                    .HasMaxLength(45)
+                    .HasMaxLength(100)
                     .HasColumnName("court");
 
                 entity.Property(e => e.CourtCity)
@@ -1062,6 +1125,45 @@ namespace PortfoliosMarket.Models.DBModels
                     .HasForeignKey(d => d.PortfolioId)
                     .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("procedures_portfolio_id_foreign");
+            });
+
+            modelBuilder.Entity<Profile>(entity =>
+            {
+                entity.ToTable("profiles");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(45)
+                    .HasColumnName("name");
+
+                entity.Property(e => e.Privileges)
+                    .HasMaxLength(500)
+                    .HasColumnName("privileges");
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.ToTable("users");
+
+                entity.HasIndex(e => e.ProfileId, "users_profile_id_foreign_idx");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Password)
+                    .HasMaxLength(45)
+                    .HasColumnName("password");
+
+                entity.Property(e => e.ProfileId).HasColumnName("profile_id");
+
+                entity.Property(e => e.Username)
+                    .HasMaxLength(45)
+                    .HasColumnName("username");
+
+                entity.HasOne(d => d.Profile)
+                    .WithMany(p => p.Users)
+                    .HasForeignKey(d => d.ProfileId)
+                    .HasConstraintName("users_profile_id_foreign");
             });
 
             OnModelCreatingPartial(modelBuilder);

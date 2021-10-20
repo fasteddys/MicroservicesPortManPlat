@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable disable
 
-namespace PMaP.Models.DBModels
+namespace PortfoliosMarket.Models.DBModels
 {
     public partial class User
     {
